@@ -30,7 +30,7 @@ export async function createImageFromPrompt({
       steps: Math.min(steps, 4),
       n,
       seed,
-      response_format: "b64_json",
+      response_format: "base64",
     });
 
     return response?.data?.[0]?.b64_json || null;
