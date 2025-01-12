@@ -10,7 +10,7 @@ const generateConsistentImage = async (
   prompt: string,
   memoryKey: string
 ): Promise<string | null> => {
-  / 
+  
   if (imageCache[prompt]) {
     console.log("Using cached image for prompt:", prompt);
     return imageCache[prompt];
@@ -43,6 +43,11 @@ const generateConsistentImage = async (
   return imageBase64;
 };
 
+const getClientIP = (req: NextRequest): string => {
+    const forwardedFor = req.headers.get("X-Forwarded-For");
+    return forwardedFor ? forwardedFor.split(",")[0] : "unknown";
+  };
+
 export async function POST(req: NextRequest) {
   try {
     const { conversation, persona } = await req.json();
@@ -70,7 +75,8 @@ export async function POST(req: NextRequest) {
         const prompt = `High quality, detailed image of ${subject}`;
 
         console.log("Using prompt:", prompt);
-        imageBase64 = await generateConsistentImage(prompt, req.ip);
+        const clientIp=getClientIP(req)
+        imageBase64 = await generateConsistentImage(prompt, clientIp);
 
         finalText += imageBase64
           ? "\nHere's the image you requested!"
